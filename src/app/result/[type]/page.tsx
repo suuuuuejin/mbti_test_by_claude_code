@@ -3,13 +3,11 @@
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { results } from "@/data/results";
-import { useRef } from "react";
 
 export default function ResultPage() {
   const params = useParams();
   const type = params.type as string;
   const result = results[type];
-  const resultCardRef = useRef<HTMLDivElement>(null);
 
   if (!result) {
     return (
@@ -24,25 +22,6 @@ export default function ResultPage() {
     );
   }
 
-  const handleShare = async () => {
-    const shareData = {
-      title: `AI 시대 생존 유형: ${result.name}`,
-      text: `나의 AI 시대 생존 유형은 "${result.name}" - ${result.tagline}`,
-      url: window.location.href,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        console.log("공유 취소");
-      }
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      alert("링크가 복사되었습니다!");
-    }
-  };
-
   const handleCopyLink = async () => {
     await navigator.clipboard.writeText(window.location.href);
     alert("링크가 복사되었습니다!");
@@ -53,7 +32,6 @@ export default function ResultPage() {
       <div className="max-w-md mx-auto space-y-6">
         {/* 결과 카드 */}
         <div
-          ref={resultCardRef}
           className={`bg-gradient-to-br ${result.bgGradient} rounded-3xl p-8 text-white shadow-2xl`}
         >
           {/* 이모지 */}
@@ -88,6 +66,31 @@ export default function ResultPage() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+
+        {/* 유형 코드 설명 */}
+        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-white">
+          <h3 className="font-bold text-lg mb-4">유형 코드 의미</h3>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="bg-white/10 rounded-xl p-3">
+              <p className="text-2xl font-mono font-bold text-purple-400">{result.code[0]}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {result.code[0] === 'A' ? 'AI 적극 활용' : 'Human 중심'}
+              </p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3">
+              <p className="text-2xl font-mono font-bold text-purple-400">{result.code[1]}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {result.code[1] === 'C' ? 'Creative 창의형' : 'Data 분석형'}
+              </p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-3">
+              <p className="text-2xl font-mono font-bold text-purple-400">{result.code[2]}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {result.code[2] === 'S' ? 'Solo 독립형' : 'Team 협업형'}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -141,14 +144,8 @@ export default function ResultPage() {
           <p className="text-gray-300 italic">&ldquo;{result.quote}&rdquo;</p>
         </div>
 
-        {/* 공유 버튼들 */}
+        {/* 버튼들 */}
         <div className="space-y-3 pt-4">
-          <button
-            onClick={handleShare}
-            className="w-full py-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold rounded-2xl hover:from-violet-600 hover:to-purple-700 transition-all"
-          >
-            결과 공유하기
-          </button>
           <button
             onClick={handleCopyLink}
             className="w-full py-4 bg-white/10 text-white font-semibold rounded-2xl hover:bg-white/20 transition-all"
